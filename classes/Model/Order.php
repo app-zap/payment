@@ -1,16 +1,12 @@
 <?php
 namespace AppZap\Payment\Model;
+use AppZap\Payment\TokenUtility;
 
 /**
  * The Order Model
  * @package AppZap\Payment\Model
  */
 class Order {
-
-  /**
-   * @var string
-   */
-  protected $abort_key;
 
   /**
    * @var string
@@ -30,12 +26,12 @@ class Order {
   /**
    * @var string
    */
-  protected $sender_country_code;
+  protected $record_token;
 
   /**
    * @var string
    */
-  protected $success_key;
+  protected $sender_country_code;
 
   /**
    * @var float
@@ -43,100 +39,82 @@ class Order {
   protected $total_price;
 
   /**
-   * @param string $abort_key
-   */
-  public function setAbortKey($abort_key) {
-    $this->abort_key = $abort_key;
-  }
-
-  /**
-   * @return string
-   */
-  public function getAbortKey() {
-    return $this->abort_key;
-  }
-
-  /**
    * @param string $currency_code
    */
-  public function setCurrencyCode($currency_code) {
+  public function set_currency_code($currency_code) {
     $this->currency_code = $currency_code;
   }
 
   /**
    * @return string
    */
-  public function getCurrencyCode() {
+  public function get_currency_code() {
     return $this->currency_code;
   }
 
   /**
    * @param array $order_items
    */
-  public function setOrderItems($order_items) {
+  public function set_order_items($order_items) {
     $this->order_items = $order_items;
   }
 
   /**
    * @return array
    */
-  public function getOrderItems() {
+  public function get_order_items() {
     return $this->order_items;
   }
 
   /**
    * @param string $reason
    */
-  public function setReason($reason) {
+  public function set_reason($reason) {
     $this->reason = $reason;
   }
 
   /**
    * @return string
    */
-  public function getReason() {
+  public function get_reason() {
     return $this->reason;
+  }
+
+  /**
+   * @return string
+   */
+  public function get_record_token() {
+    if (!$this->record_token) {
+      $this->record_token = TokenUtility::generate_record_token();
+    }
+    return $this->record_token;
   }
 
   /**
    * @param string $sender_country_code
    */
-  public function setSenderCountryCode($sender_country_code) {
+  public function set_sender_country_code($sender_country_code) {
     $this->sender_country_code = $sender_country_code;
   }
 
   /**
    * @return string
    */
-  public function getSenderCountryCode() {
+  public function get_sender_country_code() {
     return $this->sender_country_code;
-  }
-
-  /**
-   * @param string $success_key
-   */
-  public function setSuccessKey($success_key) {
-    $this->success_key = $success_key;
-  }
-
-  /**
-   * @return string
-   */
-  public function getSuccessKey() {
-    return $this->success_key;
   }
 
   /**
    * @param float $total_price
    */
-  public function setTotalPrice($total_price) {
+  public function set_total_price($total_price) {
     $this->total_price = $total_price;
   }
 
   /**
    * @return float
    */
-  public function getTotalPrice() {
+  public function get_total_price() {
     return $this->total_price;
   }
 
