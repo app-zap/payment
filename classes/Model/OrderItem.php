@@ -35,70 +35,70 @@ class OrderItem {
   /**
    * @param string $article_number
    */
-  public function setArticleNumber($article_number) {
+  public function set_article_number($article_number) {
     $this->article_number = $article_number;
   }
 
   /**
    * @return string
    */
-  public function getArticleNumber() {
+  public function get_article_number() {
     return $this->article_number;
   }
 
   /**
    * @param string $currency
    */
-  public function setCurrency($currency) {
+  public function set_currency($currency) {
     $this->currency = $currency;
   }
 
   /**
    * @return string
    */
-  public function getCurrency() {
+  public function get_currency() {
     return $this->currency;
   }
 
   /**
    * @param float $price
    */
-  public function setPrice($price) {
+  public function set_price($price) {
     $this->price = $price;
   }
 
   /**
    * @return float
    */
-  public function getPrice() {
+  public function get_price() {
     return $this->price;
   }
 
   /**
    * @param float $quantity
    */
-  public function setQuantity($quantity) {
+  public function set_quantity($quantity) {
     $this->quantity = $quantity;
   }
 
   /**
    * @return float
    */
-  public function getQuantity() {
+  public function get_quantity() {
     return $this->quantity;
   }
 
   /**
    * @param string $title
    */
-  public function setTitle($title) {
+  public function set_title($title) {
     $this->title = $title;
   }
 
   /**
    * @return string
    */
-  public function getTitle() {
+  public function get_title() {
     return $this->title;
   }
 
