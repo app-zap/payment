@@ -31,6 +31,11 @@ abstract class Payment {
   protected $order;
 
   /**
+   * @var array
+   */
+  protected $payment_provider_auth_config;
+
+  /**
    * @var string
    */
   protected $success_key;
@@ -69,14 +74,6 @@ abstract class Payment {
   }
 
   /**
-   * @return string
-   */
-  public function get_abort_url() {
-    $abort_url = '';
-    return $abort_url;
-  }
-
-  /**
    * @param boolean $debug_token_urls
    */
   public function set_debug_token_urls($debug_token_urls) {
@@ -105,6 +102,20 @@ abstract class Payment {
   }
 
   /**
+   * @param array $payment_provider_auth_config
+   */
+  public function set_payment_provider_auth_config($payment_provider_auth_config) {
+    $this->payment_provider_auth_config = $payment_provider_auth_config;
+  }
+
+  /**
+   * @return array
+   */
+  public function get_payment_provider_auth_config() {
+    return $this->payment_provider_auth_config;
+  }
+
+  /**
    * @param string $success_key
    */
   public function set_success_key($success_key) {
@@ -122,16 +133,31 @@ abstract class Payment {
    * When you have configured the payment properly this will give you a URL that you can redirect your visitor to,
    * so that he can pay the desired amount.
    *
+   * @param string $url_format
    * @return string
    */
-  abstract public function get_payment_url();
+  abstract public function get_payment_url($url_format);
 
   /**
+   * @param string $url_format
    * @return string
    */
-  public function get_success_url() {
-    $success_url = '';
-    return $success_url;
+  public function get_abort_url($url_format) {
+    return sprintf(
+        $url_format,
+        TokenUtility::get_url_token($this->order->get_identifier(), $this->order->get_record_token(), $this->get_abort_key())
+    );
+  }
+
+  /**
+   * @param string $url_format
+   * @return string
+   */
+  public function get_success_url($url_format) {
+    return sprintf(
+        $url_format,
+        TokenUtility::get_url_token($this->order->get_identifier(), $this->order->get_record_token(), $this->get_success_key())
+    );
   }
 
 }

@@ -134,7 +134,14 @@ class Order {
    * @return float
    */
   public function get_total_price() {
-    return $this->total_price;
+    if (!isset($this->total_price) && is_array($this->order_items)) {
+      $this->total_price = 0;
+      foreach ($this->order_items as $order_item) {
+        /** @var \AppZap\Payment\Model\OrderItem $order_item */
+        $this->total_price += $order_item->get_price();
+      }
+    }
+    return (float) $this->total_price;
   }
 
 }
