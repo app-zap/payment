@@ -1,0 +1,12 @@
+{
+  "name": "app-zap/payment",
+  "autoload": {
+    "psr-4": {
+      "AppZap\\Payment\\": "classes/"
+    }
+  },
+  "require": {
+    "paypal/rest-api-sdk-php": "0.7.1",
+    "smichaelsen/sofortlib-php-payment": "2.0.*"
+  }
+}
