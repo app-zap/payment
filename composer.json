@@ -4,5 +4,9 @@
     "psr-4": {
       "AppZap\\Payment\\": "classes/"
     }
+  },
+  "require": {
+    "paypal/rest-api-sdk-php": "*",
+    "smichaelsen/sofortlib-php-payment": "dev-develop"
   }
 }
