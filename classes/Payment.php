@@ -1,6 +1,8 @@
 <?php
 
 namespace AppZap\Payment;
+use AppZap\Payment\Provider\Paypal;
+use AppZap\Payment\Provider\Sofortueberweisung;
 
 /**
  * Class Payment
@@ -11,7 +13,7 @@ namespace AppZap\Payment;
  *
  * @package AppZap\Payment
  */
-class Payment {
+abstract class Payment {
 
   /**
    * @var string
@@ -31,12 +33,26 @@ class Payment {
   /**
    * @var string
    */
-  protected $payment_provider;
+  protected $success_key;
 
   /**
-   * @var string
+   * @param $payment_provider
+   * @return \AppZap\Payment\Payment
+   * @throws \InvalidArgumentException
    */
-  protected $success_key;
+  public static function get_instance($payment_provider) {
+
+    $supported_payment_providers = array(
+      Paypal::PROVIDER_NAME => '\AppZap\Payment\Provider\Paypal',
+      Sofortueberweisung::PROVIDER_NAME => '\AppZap\Payment\Provider\Sofortueberweisung',
+    );
+
+    if (in_array($payment_provider, array_keys($supported_payment_providers))) {
+      return new $supported_payment_providers[$payment_provider];
+    } else {
+      throw new \InvalidArgumentException('Payment provider ' . htmlentities($payment_provider) . ' is not supported.');
+    }
+  }
 
   /**
    * @param string $abort_key
@@ -103,29 +119,12 @@ class Payment {
   }
 
   /**
-   * @param string $payment_provider
-   */
-  public function set_payment_provider($payment_provider) {
-    $this->payment_provider = $payment_provider;
-  }
-
-  /**
-   * @return string
-   */
-  public function get_payment_provider() {
-    return $this->payment_provider;
-  }
-
-  /**
    * When you have configured the payment properly this will give you a URL that you can redirect your visitor to,
    * so that he can pay the desired amount.
    *
    * @return string
    */
-  public function get_payment_url() {
-    $payment_url = '';
-    return $payment_url;
-  }
+  abstract public function get_payment_url();
 
   /**
    * @return string

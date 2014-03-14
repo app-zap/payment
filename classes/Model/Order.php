@@ -14,6 +14,11 @@ class Order {
   protected $currency_code;
 
   /**
+   * @var string
+   */
+  protected $identifier;
+
+  /**
    * @var array
    */
   protected $order_items;
@@ -50,6 +55,20 @@ class Order {
    */
   public function get_currency_code() {
     return $this->currency_code;
+  }
+
+  /**
+   * @param string $identifier
+   */
+  public function set_identifier($identifier) {
+    $this->identifier = $identifier;
+  }
+
+  /**
+   * @return string
+   */
+  public function get_identifier() {
+    return $this->identifier;
   }
 
   /**

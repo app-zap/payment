@@ -1,7 +1,9 @@
 <?php
 namespace AppZap\Payment\Provider;
 
-class Sofortueberweisung {
+use AppZap\Payment\Payment;
+
+class Sofortueberweisung extends Payment {
 
   const PROVIDER_NAME = 'SOFORTUEBERWEISUNG';
 
