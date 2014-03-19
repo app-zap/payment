@@ -70,12 +70,16 @@ class TokenUtility {
   /**
    * This method decides if the given token fits the order.
    *
-   * @param array $order The order database record
+   * @param string $identifier The order database record
+   * @param string $record_token The order database record
    * @param string $token The token to check against
    * @param string $type_key Either the order_success_key or the order_error_key (from the settings.ini)
    * @return bool
    */
   public static function evaluate_url_token($identifier, $record_token, $token, $type_key) {
+    if (!$identifier || !$record_token || !$token) {
+      return false;
+    }
     $actual_token = self::get_url_token($identifier, $record_token, $type_key);
     return $token === $actual_token;
   }
