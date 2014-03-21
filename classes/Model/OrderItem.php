@@ -78,7 +78,7 @@ class OrderItem {
    * @param float $quantity
    */
   public function set_quantity($quantity) {
-    $this->quantity = $quantity;
+    $this->quantity = $quantity !== 0 ? $quantity : 1;
   }
 
   /**
