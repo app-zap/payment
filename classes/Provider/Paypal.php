@@ -49,11 +49,11 @@ class Paypal extends Payment {
     $payer->setPaymentMethod("paypal");
     $amount = new Amount();
     $amount->setCurrency("EUR");
-    $amount->setTotal($this->order->get_total_price());
+    $amount->setTotal(number_format($this->order->get_total_price(), 2));
     $transaction = new Transaction();
-    $transaction->setAmount($amount);
     $transaction->setDescription($this->order->get_reason());
     $transaction->setItemList($this->getItemList());
+    $transaction->setAmount($amount);
     $redirectUrls = new RedirectUrls();
     $redirectUrls->setReturnUrl($this->get_success_url($url_format));
     $redirectUrls->setCancelUrl($this->get_abort_url($url_format));
@@ -84,7 +84,7 @@ class Paypal extends Payment {
       $item->setName($order_item->get_title());
       $item->setQuantity($order_item->get_quantity());
       $item->setSku($order_item->get_article_number());
-      $item->setPrice($order_item->get_price());
+      $item->setPrice(number_format($order_item->get_price(), 2));
       $item->setCurrency("EUR");
       $items[] = $item;
     }
