@@ -1,5 +1,12 @@
 {
   "name": "app-zap/payment",
+  "authors": [
+    {
+      "name": "Sebastian Michaelsen",
+      "email": "sebastian@app-zap.de",
+      "role": "Developer"
+    }
+  ],
   "autoload": {
     "psr-4": {
       "AppZap\\Payment\\": "classes/"
