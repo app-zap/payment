@@ -1,6 +1,7 @@
 <?php
 namespace AppZap\Payment\Provider;
 
+use Airbrake\Exception;
 use AppZap\Payment\Payment;
 use PayPal\Api\Amount;
 use PayPal\Api\Item;
@@ -12,6 +13,9 @@ use PayPal\Auth\OAuthTokenCredential;
 use PayPal\Rest\ApiContext;
 
 class Paypal extends Payment {
+
+  const MODE_LIVE = 'live';
+  const MODE_SANDBOX = 'sandbox';
 
   const PROVIDER_NAME = 'PAYPAL';
 
@@ -36,12 +40,16 @@ class Paypal extends Payment {
       throw new \Exception('Total price is 0. Provider ' . self::PROVIDER_NAME . ' does not support free payments.', 1394795478);
     }
 
+    if (!in_array($this->payment_provider_auth_config[self::PROVIDER_NAME]['mode'], array(self::MODE_SANDBOX, self::MODE_LIVE))) {
+      throw new Exception('No valid API mode given.', 1399294820);
+    }
+
     $api_context = new ApiContext(new OAuthTokenCredential(
         $this->payment_provider_auth_config[self::PROVIDER_NAME]['clientid'],
         $this->payment_provider_auth_config[self::PROVIDER_NAME]['secret']
     ));
     $api_context->setConfig(array(
-        'mode' => 'sandbox',
+        'mode' => $this->payment_provider_auth_config[self::PROVIDER_NAME]['mode'],
         'http.ConnectionTimeOut' => 30,
         'log.LogEnabled' => false,
     ));
