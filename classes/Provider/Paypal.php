@@ -59,7 +59,7 @@ class Paypal extends Payment {
     $redirectUrls->setReturnUrl($this->get_success_url($url_format));
     $redirectUrls->setCancelUrl($this->get_abort_url($url_format));
     $payment = new \PayPal\Api\Payment();
-    $payment->setIntent("sale");
+    $payment->setIntent('sale');
     $payment->setPayer($payer);
     $payment->setRedirectUrls($redirectUrls);
     $payment->setTransactions(array($transaction));
@@ -75,7 +75,8 @@ class Paypal extends Payment {
     return $payment_url;
   }
 
-  public function execute($querystring) {
+  public function execute() {
+    $querystring = $_SERVER['QUERY_STRING'];
     $params = array();
     parse_str($querystring, $params);
     if ($params['PayerID']) {
@@ -88,6 +89,8 @@ class Paypal extends Payment {
       if ($returned_state->getIntent() !== 'sale') {
         throw new \Exception('Paypal Payment execution failed', 1399884990);
       }
+    } else {
+      throw new \Exception('Paypal Payment execution failed: No PayerID given.', 1399893312);
     }
   }
 

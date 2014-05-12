@@ -160,7 +160,7 @@ abstract class Payment {
     );
   }
 
-  public function execute($querystring) {
+  public function execute() {
   }
 
 }
