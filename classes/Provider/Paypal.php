@@ -7,6 +7,7 @@ use PayPal\Api\Amount;
 use PayPal\Api\Item;
 use PayPal\Api\ItemList;
 use PayPal\Api\Payer;
+use PayPal\Api\PaymentExecution;
 use PayPal\Api\RedirectUrls;
 use PayPal\Api\Transaction;
 use PayPal\Auth\OAuthTokenCredential;
@@ -44,15 +45,7 @@ class Paypal extends Payment {
       throw new Exception('No valid API mode given.', 1399294820);
     }
 
-    $api_context = new ApiContext(new OAuthTokenCredential(
-        $this->payment_provider_auth_config[self::PROVIDER_NAME]['clientid'],
-        $this->payment_provider_auth_config[self::PROVIDER_NAME]['secret']
-    ));
-    $api_context->setConfig(array(
-        'mode' => $this->payment_provider_auth_config[self::PROVIDER_NAME]['mode'],
-        'http.ConnectionTimeOut' => 30,
-        'log.LogEnabled' => false,
-    ));
+    $api_context = $this->create_api_context();
     $payer = new Payer();
     $payer->setPaymentMethod("paypal");
     $amount = new Amount();
@@ -71,6 +64,7 @@ class Paypal extends Payment {
     $payment->setRedirectUrls($redirectUrls);
     $payment->setTransactions(array($transaction));
     $payment->create($api_context);
+    $_SESSION['app-zap/payment/payment_id'] = $payment->getId();
     $payment_url = '';
     foreach ($payment->getLinks() as $link) {
       /** @var \PayPal\Api\Links $link */
@@ -79,6 +73,22 @@ class Paypal extends Payment {
       }
     }
     return $payment_url;
+  }
+
+  public function execute($querystring) {
+    $params = array();
+    parse_str($querystring, $params);
+    if ($params['PayerID']) {
+      $api_context = $this->create_api_context();
+      $paymentId = $_SESSION['app-zap/payment/payment_id'];
+      $payment = \PayPal\Api\Payment::get($paymentId, $api_context);
+      $execution = new PaymentExecution();
+      $execution->setPayerId($params['PayerID']);
+      $returned_state = $payment->execute($execution, $api_context);
+      if ($returned_state->getIntent() !== 'sale') {
+        throw new \Exception('Paypal Payment execution failed', 1399884990);
+      }
+    }
   }
 
   /**
@@ -99,5 +109,21 @@ class Paypal extends Payment {
     $itemList = new ItemList();
     $itemList->setItems($items);
     return $itemList;
+  }
+
+  /**
+   * @return ApiContext
+   */
+  protected function create_api_context() {
+    $api_context = new ApiContext(new OAuthTokenCredential(
+        $this->payment_provider_auth_config[self::PROVIDER_NAME]['clientid'],
+        $this->payment_provider_auth_config[self::PROVIDER_NAME]['secret']
+    ));
+    $api_context->setConfig(array(
+        'mode' => $this->payment_provider_auth_config[self::PROVIDER_NAME]['mode'],
+        'http.ConnectionTimeOut' => 30,
+        'log.LogEnabled' => false,
+    ));
+    return $api_context;
   }
 }
