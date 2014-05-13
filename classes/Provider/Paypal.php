@@ -72,7 +72,7 @@ class Paypal extends Payment {
         $payment_url = $link->getHref();
       }
     }
-    return $payment_url;
+    return $payment_url . '&useraction=commit';
   }
 
   public function execute() {
