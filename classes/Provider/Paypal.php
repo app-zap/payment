@@ -79,7 +79,7 @@ class Paypal extends Payment {
     $querystring = $_SERVER['QUERY_STRING'];
     $params = array();
     parse_str($querystring, $params);
-    if ($params['PayerID']) {
+    if (isset($params['PayerID'])) {
       $api_context = $this->create_api_context();
       $paymentId = $_SESSION['app-zap/payment/payment_id'];
       $payment = \PayPal\Api\Payment::get($paymentId, $api_context);
@@ -90,7 +90,7 @@ class Paypal extends Payment {
         throw new \Exception('Paypal Payment execution failed', 1399884990);
       }
     } else {
-      throw new \Exception('Paypal Payment execution failed: No PayerID given.', 1399893312);
+      throw new \Exception('Paypal Payment execution failed: No PayerID given.', 1399987976);
     }
   }
 
