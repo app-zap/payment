@@ -1,7 +1,6 @@
 <?php
 namespace AppZap\Payment\Provider;
 
-use Airbrake\Exception;
 use AppZap\Payment\Payment;
 use PayPal\Api\Amount;
 use PayPal\Api\Item;
@@ -42,7 +41,7 @@ class Paypal extends Payment {
     }
 
     if (!in_array($this->payment_provider_auth_config[self::PROVIDER_NAME]['mode'], array(self::MODE_SANDBOX, self::MODE_LIVE))) {
-      throw new Exception('No valid API mode given.', 1399294820);
+      throw new \Exception('No valid API mode given.', 1399294820);
     }
 
     $api_context = $this->create_api_context();
