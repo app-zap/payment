@@ -1,6 +1,7 @@
 <?php
 
 namespace AppZap\Payment;
+use AppZap\Payment\Provider\Offline;
 use AppZap\Payment\Provider\Paypal;
 use AppZap\Payment\Provider\Sofortueberweisung;
 
@@ -50,6 +51,7 @@ abstract class Payment {
     $supported_payment_providers = array(
       Paypal::PROVIDER_NAME => '\AppZap\Payment\Provider\Paypal',
       Sofortueberweisung::PROVIDER_NAME => '\AppZap\Payment\Provider\Sofortueberweisung',
+      Offline::PROVIDER_NAME => '\AppZap\Payment\Provider\Offline',
     );
 
     if (in_array($payment_provider, array_keys($supported_payment_providers))) {
