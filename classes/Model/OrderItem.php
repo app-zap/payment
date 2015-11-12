@@ -4,7 +4,7 @@ namespace AppZap\Payment\Model;
 /**
  * The OrderItem Model
  */
-class OrderItem
+class OrderItem implements OrderItemInterface
 {
 
     /**
