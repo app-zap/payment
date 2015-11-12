@@ -10,160 +10,175 @@ use AppZap\Payment\Provider\Sofortueberweisung;
  *
  * The main class used to configure and prepare the payment.
  *
- * See: ->get_payment_url()
+ * See: ->getPaymentUrl()
  *
  * @package AppZap\Payment
  */
-abstract class Payment {
+abstract class Payment
+{
 
-  /**
-   * @var string
-   */
-  protected $abort_key;
+    /**
+     * @var string
+     */
+    protected $abortKey;
 
-  /**
-   * @var bool
-   */
-  protected $debug_token_urls = false;
+    /**
+     * @var bool
+     */
+    protected $debugTokenUrls = false;
 
-  /**
-   * @var \AppZap\Payment\Model\Order
-   */
-  protected $order;
+    /**
+     * @var \AppZap\Payment\Model\Order
+     */
+    protected $order;
 
-  /**
-   * @var array
-   */
-  protected $payment_provider_auth_config;
+    /**
+     * @var array
+     */
+    protected $paymentProviderAuthConfig;
 
-  /**
-   * @var string
-   */
-  protected $success_key;
+    /**
+     * @var string
+     */
+    protected $successKey;
 
-  /**
-   * @param $payment_provider
-   * @return \AppZap\Payment\Payment
-   * @throws \InvalidArgumentException
-   */
-  public static function get_instance($payment_provider) {
+    /**
+     * @param $paymentProvider
+     * @return \AppZap\Payment\Payment
+     * @throws \InvalidArgumentException
+     */
+    public static function getInstance($paymentProvider)
+    {
 
-    $supported_payment_providers = array(
-      Paypal::PROVIDER_NAME => '\AppZap\Payment\Provider\Paypal',
-      Sofortueberweisung::PROVIDER_NAME => '\AppZap\Payment\Provider\Sofortueberweisung',
-      Offline::PROVIDER_NAME => '\AppZap\Payment\Provider\Offline',
-    );
+        $supportedPaymentProviders = array(
+            Paypal::PROVIDER_NAME => '\AppZap\Payment\Provider\Paypal',
+            Sofortueberweisung::PROVIDER_NAME => '\AppZap\Payment\Provider\Sofortueberweisung',
+            Offline::PROVIDER_NAME => '\AppZap\Payment\Provider\Offline',
+        );
 
-    if (in_array($payment_provider, array_keys($supported_payment_providers))) {
-      return new $supported_payment_providers[$payment_provider];
-    } else {
-      throw new \InvalidArgumentException('Payment provider ' . htmlentities($payment_provider) . ' is not supported.');
+        if (in_array($paymentProvider, array_keys($supportedPaymentProviders))) {
+            return new $supportedPaymentProviders[$paymentProvider];
+        } else {
+            throw new \InvalidArgumentException('Payment provider ' . htmlentities($paymentProvider) . ' is not supported.');
+        }
     }
-  }
 
-  /**
-   * @param string $abort_key
-   */
-  public function set_abort_key($abort_key) {
-    $this->abort_key = $abort_key;
-  }
+    /**
+     * @param string $abortKey
+     */
+    public function setAbortKey($abortKey)
+    {
+        $this->abortKey = $abortKey;
+    }
 
-  /**
-   * @return string
-   */
-  public function get_abort_key() {
-    return $this->abort_key;
-  }
+    /**
+     * @return string
+     */
+    public function getAbortKey()
+    {
+        return $this->abortKey;
+    }
 
-  /**
-   * @param boolean $debug_token_urls
-   */
-  public function set_debug_token_urls($debug_token_urls) {
-    $this->debug_token_urls = $debug_token_urls;
-  }
+    /**
+     * @param boolean $debugTokenUrls
+     */
+    public function setDebugTokenUrls($debugTokenUrls)
+    {
+        $this->debugTokenUrls = $debugTokenUrls;
+    }
 
-  /**
-   * @return boolean
-   */
-  public function get_debug_token_urls() {
-    return $this->debug_token_urls;
-  }
+    /**
+     * @return boolean
+     */
+    public function getDebugTokenUrls()
+    {
+        return $this->debugTokenUrls;
+    }
 
-  /**
-   * @param \AppZap\Payment\Model\Order $order
-   */
-  public function set_order($order) {
-    $this->order = $order;
-  }
+    /**
+     * @param \AppZap\Payment\Model\Order $order
+     */
+    public function setOrder($order)
+    {
+        $this->order = $order;
+    }
 
-  /**
-   * @return \AppZap\Payment\Model\Order
-   */
-  public function get_order() {
-    return $this->order;
-  }
+    /**
+     * @return \AppZap\Payment\Model\Order
+     */
+    public function getOrder()
+    {
+        return $this->order;
+    }
 
-  /**
-   * @param array $payment_provider_auth_config
-   */
-  public function set_payment_provider_auth_config($payment_provider_auth_config) {
-    $this->payment_provider_auth_config = $payment_provider_auth_config;
-  }
+    /**
+     * @param array $paymentProviderAuthConfig
+     */
+    public function setPaymentProviderAuthConfig($paymentProviderAuthConfig)
+    {
+        $this->paymentProviderAuthConfig = $paymentProviderAuthConfig;
+    }
 
-  /**
-   * @return array
-   */
-  public function get_payment_provider_auth_config() {
-    return $this->payment_provider_auth_config;
-  }
+    /**
+     * @return array
+     */
+    public function getPaymentProviderAuthConfig()
+    {
+        return $this->paymentProviderAuthConfig;
+    }
 
-  /**
-   * @param string $success_key
-   */
-  public function set_success_key($success_key) {
-    $this->success_key = $success_key;
-  }
+    /**
+     * @param string $successKey
+     */
+    public function setSuccessKey($successKey)
+    {
+        $this->successKey = $successKey;
+    }
 
-  /**
-   * @return string
-   */
-  public function get_success_key() {
-    return $this->success_key;
-  }
+    /**
+     * @return string
+     */
+    public function getSuccessKey()
+    {
+        return $this->successKey;
+    }
 
-  /**
-   * When you have configured the payment properly this will give you a URL that you can redirect your visitor to,
-   * so that he can pay the desired amount.
-   *
-   * @param string $url_format
-   * @return string
-   */
-  abstract public function get_payment_url($url_format);
+    /**
+     * When you have configured the payment properly this will give you a URL that you can redirect your visitor to,
+     * so that he can pay the desired amount.
+     *
+     * @param string $urlFormat
+     * @return string
+     */
+    abstract public function getPaymentUrl($urlFormat);
 
-  /**
-   * @param string $url_format
-   * @return string
-   */
-  public function get_abort_url($url_format) {
-    return sprintf(
-        $url_format,
-        TokenUtility::get_url_token($this->order->get_identifier(), $this->order->get_record_token(), $this->get_abort_key())
-    );
-  }
+    /**
+     * @param string $urlFormat
+     * @return string
+     */
+    public function getAbortUrl($urlFormat)
+    {
+        return sprintf(
+            $urlFormat,
+            TokenUtility::getUrlToken($this->order->getIdentifier(), $this->order->getRecordToken(), $this->getAbortKey())
+        );
+    }
 
-  /**
-   * @param string $url_format
-   * @return string
-   */
-  public function get_success_url($url_format) {
-    return sprintf(
-        $url_format,
-        TokenUtility::get_url_token($this->order->get_identifier(), $this->order->get_record_token(), $this->get_success_key())
-    );
-  }
+    /**
+     * @param string $urlFormat
+     * @return string
+     */
+    public function getSuccessUrl($urlFormat)
+    {
+        return sprintf(
+            $urlFormat,
+            TokenUtility::getUrlToken($this->order->getIdentifier(), $this->order->getRecordToken(), $this->getSuccessKey())
+        );
+    }
 
-  public function execute() {
-  }
+    public function execute()
+    {
+    }
 
 }
 

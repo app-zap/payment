@@ -3,103 +3,113 @@ namespace AppZap\Payment\Model;
 
 /**
  * The OrderItem Model
- * @package AppZap\Payment\Model
  */
-class OrderItem {
+class OrderItem
+{
 
-  /**
-   * @var string
-   */
-  protected $article_number;
+    /**
+     * @var string
+     */
+    protected $articleNumber;
 
-  /**
-   * @var string
-   */
-  protected $currency;
+    /**
+     * @var string
+     */
+    protected $currency;
 
-  /**
-   * @var float
-   */
-  protected $price;
+    /**
+     * @var float
+     */
+    protected $price;
 
-  /**
-   * @var float
-   */
-  protected $quantity;
+    /**
+     * @var float
+     */
+    protected $quantity;
 
-  /**
-   * @var string
-   */
-  protected $title;
+    /**
+     * @var string
+     */
+    protected $title;
 
-  /**
-   * @param string $article_number
-   */
-  public function set_article_number($article_number) {
-    $this->article_number = $article_number;
-  }
+    /**
+     * @param string $articleNumber
+     */
+    public function setArticleNumber($articleNumber)
+    {
+        $this->articleNumber = $articleNumber;
+    }
 
-  /**
-   * @return string
-   */
-  public function get_article_number() {
-    return $this->article_number;
-  }
+    /**
+     * @return string
+     */
+    public function getArticleNumber()
+    {
+        return $this->articleNumber;
+    }
 
-  /**
-   * @param string $currency
-   */
-  public function set_currency($currency) {
-    $this->currency = $currency;
-  }
+    /**
+     * @param string $currency
+     */
+    public function setCurrency($currency)
+    {
+        $this->currency = $currency;
+    }
 
-  /**
-   * @return string
-   */
-  public function get_currency() {
-    return $this->currency;
-  }
+    /**
+     * @return string
+     */
+    public function getCurrency()
+    {
+        return $this->currency;
+    }
 
-  /**
-   * @param float $price
-   */
-  public function set_price($price) {
-    $this->price = $price;
-  }
+    /**
+     * @param float $price
+     */
+    public function setPrice($price)
+    {
+        $this->price = $price;
+    }
 
-  /**
-   * @return float
-   */
-  public function get_price() {
-    return $this->price;
-  }
+    /**
+     * @return float
+     */
+    public function getPrice()
+    {
+        return $this->price;
+    }
 
-  /**
-   * @param float $quantity
-   */
-  public function set_quantity($quantity) {
-    $this->quantity = $quantity !== 0 ? $quantity : 1;
-  }
+    /**
+     * @param float $quantity
+     */
+    public function setQuantity($quantity)
+    {
+        $this->quantity = $quantity !== 0 ? $quantity : 1;
+    }
 
-  /**
-   * @return float
-   */
-  public function get_quantity() {
-    return $this->quantity;
-  }
+    /**
+     * @return float
+     */
+    public function getQuantity()
+    {
+        return $this->quantity;
+    }
 
-  /**
-   * @param string $title
-   */
-  public function set_title($title) {
-    $this->title = $title;
-  }
+    /**
+     * @param string $title
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
+    }
 
-  /**
-   * @return string
-   */
-  public function get_title() {
-    return $this->title;
-  }
+    /**
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
 
 }
