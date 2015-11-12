@@ -1,6 +1,7 @@
 <?php
-
 namespace AppZap\Payment;
+
+use AppZap\Payment\Model\OrderInterface;
 use AppZap\Payment\Provider\Offline;
 use AppZap\Payment\Provider\Paypal;
 use AppZap\Payment\Provider\Sofortueberweisung;
@@ -28,7 +29,7 @@ abstract class Payment
     protected $debugTokenUrls = false;
 
     /**
-     * @var \AppZap\Payment\Model\Order
+     * @var OrderInterface
      */
     protected $order;
 
@@ -43,11 +44,11 @@ abstract class Payment
     protected $successKey;
 
     /**
-     * @param $paymentProvider
+     * @param $paymentProviderName
      * @return \AppZap\Payment\Payment
      * @throws \InvalidArgumentException
      */
-    public static function getInstance($paymentProvider)
+    public static function getInstance($paymentProviderName)
     {
 
         $supportedPaymentProviders = array(
@@ -56,10 +57,10 @@ abstract class Payment
             Offline::PROVIDER_NAME => '\AppZap\Payment\Provider\Offline',
         );
 
-        if (in_array($paymentProvider, array_keys($supportedPaymentProviders))) {
-            return new $supportedPaymentProviders[$paymentProvider];
+        if (array_key_exists($paymentProviderName, $supportedPaymentProviders)) {
+            return new $supportedPaymentProviders[$paymentProviderName];
         } else {
-            throw new \InvalidArgumentException('Payment provider ' . htmlentities($paymentProvider) . ' is not supported.');
+            throw new \InvalidArgumentException('Payment provider ' . htmlentities($paymentProviderName) . ' is not supported.');
         }
     }
 
@@ -96,15 +97,15 @@ abstract class Payment
     }
 
     /**
-     * @param \AppZap\Payment\Model\Order $order
+     * @param OrderInterface $order
      */
-    public function setOrder($order)
+    public function setOrder(OrderInterface $order)
     {
         $this->order = $order;
     }
 
     /**
-     * @return \AppZap\Payment\Model\Order
+     * @return OrderInterface
      */
     public function getOrder()
     {

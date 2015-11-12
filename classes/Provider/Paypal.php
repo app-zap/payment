@@ -38,8 +38,8 @@ class Paypal extends Payment
             throw new \Exception('Auth Config for Provider ' . self::PROVIDER_NAME . ' is not set.', 1394795187);
         }
 
-        $total_price = $this->order->getTotalPrice();
-        if ($total_price == 0) {
+        $totalPrice = $this->order->getTotalPrice();
+        if ($totalPrice == 0) {
             throw new \Exception('Total price is 0. Provider ' . self::PROVIDER_NAME . ' does not support free payments.', 1394795478);
         }
 
@@ -110,7 +110,7 @@ class Paypal extends Payment
             $item->setQuantity($orderItem->getQuantity());
             $item->setSku($orderItem->getArticleNumber());
             $item->setPrice(number_format($orderItem->getPrice() / $orderItem->getQuantity(), 2));
-            $item->setCurrency("EUR");
+            $item->setCurrency('EUR');
             $items[] = $item;
         }
         $itemList = new ItemList();

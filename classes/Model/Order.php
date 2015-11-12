@@ -7,7 +7,7 @@ use AppZap\Payment\TokenUtility;
 /**
  * The Order Model
  */
-class Order
+class Order implements OrderInterface
 {
 
     /**
