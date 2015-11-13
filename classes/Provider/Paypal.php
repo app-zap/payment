@@ -10,6 +10,7 @@ use PayPal\Api\PaymentExecution;
 use PayPal\Api\RedirectUrls;
 use PayPal\Api\Transaction;
 use PayPal\Auth\OAuthTokenCredential;
+use PayPal\Core\PPHttpConfig;
 use PayPal\Rest\ApiContext;
 
 class Paypal extends Payment
@@ -30,6 +31,10 @@ class Paypal extends Payment
      */
     public function getPaymentUrl($urlFormat)
     {
+
+        // Set SSL version to 4, see: http://stackoverflow.com/questions/26379773/paypal-ipn-acknowledgements-failing-with-ssl-routinesssl3-read-bytessslv3-aler
+        PPHttpConfig::$DEFAULT_CURL_OPTS[CURLOPT_SSLVERSION] = 4;
+
         if (
             !is_array($this->paymentProviderAuthConfig[self::PROVIDER_NAME]) ||
             !isset($this->paymentProviderAuthConfig[self::PROVIDER_NAME]['clientid']) ||
