@@ -32,9 +32,6 @@ class Paypal extends Payment
     public function getPaymentUrl($urlFormat)
     {
 
-        // Set SSL version to 4, see: http://stackoverflow.com/questions/26379773/paypal-ipn-acknowledgements-failing-with-ssl-routinesssl3-read-bytessslv3-aler
-        PPHttpConfig::$DEFAULT_CURL_OPTS[CURLOPT_SSLVERSION] = 4;
-
         if (
             !is_array($this->paymentProviderAuthConfig[self::PROVIDER_NAME]) ||
             !isset($this->paymentProviderAuthConfig[self::PROVIDER_NAME]['clientid']) ||
@@ -71,7 +68,7 @@ class Paypal extends Payment
         $payment->setRedirectUrls($redirectUrls);
         $payment->setTransactions([$transaction]);
         $payment->create($apiContext);
-        $_SESSION['app-zap/payment/payment_id'] = $payment->getId();
+        $this->getSessionHandler()->store('paymentId', $payment->getId());
         $paymentUrl = '';
         foreach ($payment->getLinks() as $link) {
             /** @var \PayPal\Api\Links $link */
@@ -82,6 +79,10 @@ class Paypal extends Payment
         return $paymentUrl . '&useraction=commit';
     }
 
+    /**
+     * @throws \Exception
+     * @return void
+     */
     public function execute()
     {
         $querystring = $_SERVER['QUERY_STRING'];
@@ -89,8 +90,7 @@ class Paypal extends Payment
         parse_str($querystring, $params);
         if (isset($params['PayerID'])) {
             $apiContext = $this->createApiContext();
-            $paymentId = $_SESSION['app-zap/payment/payment_id'];
-            $payment = \PayPal\Api\Payment::get($paymentId, $apiContext);
+            $payment = \PayPal\Api\Payment::get($this->getSessionHandler()->get('paymentId'), $apiContext);
             $execution = new PaymentExecution();
             $execution->setPayerId($params['PayerID']);
             $returnedState = $payment->execute($execution, $apiContext);
@@ -128,6 +128,9 @@ class Paypal extends Payment
      */
     protected function createApiContext()
     {
+        // Set SSL version to 4, see: http://stackoverflow.com/questions/26379773/paypal-ipn-acknowledgements-failing-with-ssl-routinesssl3-read-bytessslv3-aler
+        PPHttpConfig::$DEFAULT_CURL_OPTS[CURLOPT_SSLVERSION] = 4;
+
         $apiContext = new ApiContext(new OAuthTokenCredential(
             $this->paymentProviderAuthConfig[self::PROVIDER_NAME]['clientid'],
             $this->paymentProviderAuthConfig[self::PROVIDER_NAME]['secret']

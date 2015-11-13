@@ -5,6 +5,8 @@ use AppZap\Payment\Model\OrderInterface;
 use AppZap\Payment\Provider\Offline;
 use AppZap\Payment\Provider\Paypal;
 use AppZap\Payment\Provider\Sofortueberweisung;
+use AppZap\Payment\Session\SessionHandler;
+use AppZap\Payment\Session\SessionHandlerInterface;
 
 /**
  * Class Payment
@@ -37,6 +39,11 @@ abstract class Payment
      * @var array
      */
     protected $paymentProviderAuthConfig;
+
+    /**
+     * @var SessionHandlerInterface
+     */
+    protected $sessionHandler;
 
     /**
      * @var string
@@ -126,6 +133,25 @@ abstract class Payment
     public function getPaymentProviderAuthConfig()
     {
         return $this->paymentProviderAuthConfig;
+    }
+
+    /**
+     * @return SessionHandlerInterface
+     */
+    public function getSessionHandler()
+    {
+        if (!$this->sessionHandler instanceof SessionHandlerInterface) {
+            $this->sessionHandler = new SessionHandler();
+        }
+        return $this->sessionHandler;
+    }
+
+    /**
+     * @param SessionHandlerInterface $sessionHandler
+     */
+    public function setSessionHandler(SessionHandlerInterface $sessionHandler)
+    {
+        $this->sessionHandler = $sessionHandler;
     }
 
     /**
