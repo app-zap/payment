@@ -3,7 +3,7 @@ namespace AppZap\Payment\Provider;
 
 use AppZap\Payment\Payment;
 
-class Offline extends Payment
+class Offline extends Payment implements PaymentProviderInterface
 {
 
     const PROVIDER_NAME = 'OFFLINE';
@@ -17,6 +17,6 @@ class Offline extends Payment
      */
     public function getPaymentUrl($urlFormat)
     {
-        return $this->getSuccessUrl($urlFormat);
+        return $this->getOfflinePaymentUrl($urlFormat);
     }
 }

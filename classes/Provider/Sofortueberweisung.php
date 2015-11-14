@@ -3,7 +3,7 @@ namespace AppZap\Payment\Provider;
 
 use AppZap\Payment\Payment;
 
-class Sofortueberweisung extends Payment
+class Sofortueberweisung extends Payment implements PaymentProviderInterface
 {
 
     const PROVIDER_NAME = 'SOFORTUEBERWEISUNG';

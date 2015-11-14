@@ -2,9 +2,7 @@
 namespace AppZap\Payment;
 
 use AppZap\Payment\Model\OrderInterface;
-use AppZap\Payment\Provider\Offline;
-use AppZap\Payment\Provider\Paypal;
-use AppZap\Payment\Provider\Sofortueberweisung;
+use AppZap\Payment\Provider\PaymentProviderInterface;
 use AppZap\Payment\Session\SessionHandler;
 use AppZap\Payment\Session\SessionHandlerInterface;
 
@@ -23,12 +21,7 @@ abstract class Payment
     /**
      * @var string
      */
-    protected $abortKey;
-
-    /**
-     * @var bool
-     */
-    protected $debugTokenUrls = false;
+    protected $encryptionKey;
 
     /**
      * @var OrderInterface
@@ -46,61 +39,11 @@ abstract class Payment
     protected $sessionHandler;
 
     /**
-     * @var string
+     * @param string $encryptionKey
      */
-    protected $successKey;
-
-    /**
-     * @param $paymentProviderName
-     * @return \AppZap\Payment\Payment
-     * @throws \InvalidArgumentException
-     */
-    public static function getInstance($paymentProviderName)
+    public function setEncryptionKey($encryptionKey)
     {
-
-        $supportedPaymentProviders = array(
-            Paypal::PROVIDER_NAME => '\AppZap\Payment\Provider\Paypal',
-            Sofortueberweisung::PROVIDER_NAME => '\AppZap\Payment\Provider\Sofortueberweisung',
-            Offline::PROVIDER_NAME => '\AppZap\Payment\Provider\Offline',
-        );
-
-        if (array_key_exists($paymentProviderName, $supportedPaymentProviders)) {
-            return new $supportedPaymentProviders[$paymentProviderName];
-        } else {
-            throw new \InvalidArgumentException('Payment provider ' . htmlentities($paymentProviderName) . ' is not supported.');
-        }
-    }
-
-    /**
-     * @param string $abortKey
-     */
-    public function setAbortKey($abortKey)
-    {
-        $this->abortKey = $abortKey;
-    }
-
-    /**
-     * @return string
-     */
-    public function getAbortKey()
-    {
-        return $this->abortKey;
-    }
-
-    /**
-     * @param boolean $debugTokenUrls
-     */
-    public function setDebugTokenUrls($debugTokenUrls)
-    {
-        $this->debugTokenUrls = $debugTokenUrls;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function getDebugTokenUrls()
-    {
-        return $this->debugTokenUrls;
+        $this->encryptionKey = $encryptionKey;
     }
 
     /**
@@ -112,38 +55,11 @@ abstract class Payment
     }
 
     /**
-     * @return OrderInterface
-     */
-    public function getOrder()
-    {
-        return $this->order;
-    }
-
-    /**
      * @param array $paymentProviderAuthConfig
      */
-    public function setPaymentProviderAuthConfig($paymentProviderAuthConfig)
+    public function setPaymentProviderAuthConfig(array $paymentProviderAuthConfig)
     {
         $this->paymentProviderAuthConfig = $paymentProviderAuthConfig;
-    }
-
-    /**
-     * @return array
-     */
-    public function getPaymentProviderAuthConfig()
-    {
-        return $this->paymentProviderAuthConfig;
-    }
-
-    /**
-     * @return SessionHandlerInterface
-     */
-    public function getSessionHandler()
-    {
-        if (!$this->sessionHandler instanceof SessionHandlerInterface) {
-            $this->sessionHandler = new SessionHandler();
-        }
-        return $this->sessionHandler;
     }
 
     /**
@@ -155,39 +71,25 @@ abstract class Payment
     }
 
     /**
-     * @param string $successKey
+     * @return SessionHandlerInterface
      */
-    public function setSuccessKey($successKey)
+    protected function getSessionHandler()
     {
-        $this->successKey = $successKey;
+        if (!$this->sessionHandler instanceof SessionHandlerInterface) {
+            $this->sessionHandler = new SessionHandler();
+        }
+        return $this->sessionHandler;
     }
-
-    /**
-     * @return string
-     */
-    public function getSuccessKey()
-    {
-        return $this->successKey;
-    }
-
-    /**
-     * When you have configured the payment properly this will give you a URL that you can redirect your visitor to,
-     * so that he can pay the desired amount.
-     *
-     * @param string $urlFormat
-     * @return string
-     */
-    abstract public function getPaymentUrl($urlFormat);
 
     /**
      * @param string $urlFormat
      * @return string
      */
-    public function getAbortUrl($urlFormat)
+    protected function getAbortUrl($urlFormat)
     {
         return sprintf(
             $urlFormat,
-            TokenUtility::getUrlToken($this->order->getIdentifier(), $this->order->getRecordToken(), $this->getAbortKey())
+            TokenUtility::getUrlToken($this->order->getIdentifier(), $this->order->getRecordToken(), $this->getReturnKey(PaymentProviderInterface::RETURN_TYPE_ABORT))
         );
     }
 
@@ -195,16 +97,57 @@ abstract class Payment
      * @param string $urlFormat
      * @return string
      */
-    public function getSuccessUrl($urlFormat)
+    protected function getOfflinePaymentUrl($urlFormat)
     {
         return sprintf(
             $urlFormat,
-            TokenUtility::getUrlToken($this->order->getIdentifier(), $this->order->getRecordToken(), $this->getSuccessKey())
+            TokenUtility::getUrlToken($this->order->getIdentifier(), $this->order->getRecordToken(), $this->getReturnKey(PaymentProviderInterface::RETURN_TYPE_OFFLINE_PAYMENT))
         );
     }
 
+    /**
+     * @param string $urlFormat
+     * @return string
+     */
+    protected function getSuccessUrl($urlFormat)
+    {
+        return sprintf(
+            $urlFormat,
+            TokenUtility::getUrlToken($this->order->getIdentifier(), $this->order->getRecordToken(), $this->getReturnKey(PaymentProviderInterface::RETURN_TYPE_PAID))
+        );
+    }
+
+    /**
+     * @return void
+     */
     public function execute()
     {
+    }
+
+    /**
+     * @param string $type
+     * @return string
+     */
+    protected function getReturnKey($type)
+    {
+        return hash_hmac('sha1', $type, $this->encryptionKey);
+    }
+
+    /**
+     * @param OrderInterface $order
+     * @param string $returnToken
+     * @return int
+     * @throws \Exception
+     */
+    public function evaluateReturnToken(OrderInterface $order, $returnToken)
+    {
+        $returnTypes = [PaymentProviderInterface::RETURN_TYPE_PAID, PaymentProviderInterface::RETURN_TYPE_ABORT, PaymentProviderInterface::RETURN_TYPE_OFFLINE_PAYMENT];
+        foreach ($returnTypes as $returnType) {
+            if (TokenUtility::evaluateUrlToken($order->getIdentifier(), $order->getRecordToken(), $returnToken, $this->getReturnKey($returnType))) {
+                return $returnType;
+            }
+        }
+        return PaymentProviderInterface::RETURN_TYPE_ERROR;
     }
 
 }

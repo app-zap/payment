@@ -12,7 +12,7 @@ use PayPal\Api\Transaction;
 use PayPal\Auth\OAuthTokenCredential;
 use PayPal\Rest\ApiContext;
 
-class Paypal extends Payment
+class Paypal extends Payment implements PaymentProviderInterface
 {
 
     const MODE_LIVE = 'live';
