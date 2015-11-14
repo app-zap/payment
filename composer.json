@@ -13,7 +13,7 @@
     }
   },
   "require": {
-    "paypal/rest-api-sdk-php": "0.16.1",
+    "paypal/rest-api-sdk-php": "v1.6.1",
     "smichaelsen/sofortlib-php-payment": "2.0.*"
   }
 }
