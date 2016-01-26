@@ -1,10 +1,7 @@
 <?php
 namespace AppZap\Payment;
 
-use AppZap\Payment\Provider\Offline;
 use AppZap\Payment\Provider\PaymentProviderInterface;
-use AppZap\Payment\Provider\Paypal;
-use AppZap\Payment\Provider\Sofortueberweisung;
 
 class PaymentFactory
 {

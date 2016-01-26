@@ -1,7 +1,6 @@
 <?php
 namespace AppZap\Payment\Model;
 
-use AppZap\Payment\Model\OrderItem;
 use AppZap\Payment\TokenUtility;
 
 /**
