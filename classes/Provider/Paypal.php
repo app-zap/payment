@@ -70,7 +70,6 @@ class Paypal extends Payment implements PaymentProviderInterface
         $this->getSessionHandler()->store('paymentId', $payment->getId());
         $paymentUrl = '';
         foreach ($payment->getLinks() as $link) {
-            /** @var \PayPal\Api\Links $link */
             if ($link->getRel() === 'approval_url') {
                 $paymentUrl = $link->getHref();
             }
@@ -108,7 +107,6 @@ class Paypal extends Payment implements PaymentProviderInterface
     {
         $items = array();
         foreach ($this->order->getOrderItems() as $orderItem) {
-            /** @var \AppZap\Payment\Model\OrderItem $orderItem */
             $item = new Item();
             $item->setName($orderItem->getTitle());
             $item->setQuantity($orderItem->getQuantity());

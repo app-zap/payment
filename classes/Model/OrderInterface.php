@@ -15,7 +15,7 @@ interface OrderInterface
     public function getIdentifier();
 
     /**
-     * @return array
+     * @return array|OrderItemInterface[]
      */
     public function getOrderItems();
 
