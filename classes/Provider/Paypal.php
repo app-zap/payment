@@ -53,7 +53,7 @@ class Paypal extends Payment implements PaymentProviderInterface
         $payer->setPaymentMethod('paypal');
         $amount = new Amount();
         $amount->setCurrency("EUR");
-        $amount->setTotal(number_format($this->order->getTotalPrice(), 2));
+        $amount->setTotal((float)$this->order->getTotalPrice());
         $transaction = new Transaction();
         $transaction->setDescription($this->order->getReason());
         $transaction->setItemList($this->getItemList());
@@ -111,7 +111,7 @@ class Paypal extends Payment implements PaymentProviderInterface
             $item->setName($orderItem->getTitle());
             $item->setQuantity($orderItem->getQuantity());
             $item->setSku($orderItem->getArticleNumber());
-            $item->setPrice(number_format($orderItem->getPrice() / $orderItem->getQuantity(), 2));
+            $item->setPrice((float)$orderItem->getPrice() / $orderItem->getQuantity());
             $item->setCurrency('EUR');
             $items[] = $item;
         }
