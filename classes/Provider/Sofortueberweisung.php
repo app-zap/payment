@@ -41,4 +41,12 @@ class Sofortueberweisung extends Payment implements PaymentProviderInterface
         $url = $sofort->getPaymentUrl();
         return $url;
     }
+
+    /**
+     * @return bool
+     */
+    public function isExternalProvider()
+    {
+        return true;
+    }
 }

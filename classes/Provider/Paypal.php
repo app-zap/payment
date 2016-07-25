@@ -137,4 +137,12 @@ class Paypal extends Payment implements PaymentProviderInterface
         ));
         return $apiContext;
     }
+
+    /**
+     * @return bool
+     */
+    public function isExternalProvider()
+    {
+        return true;
+    }
 }

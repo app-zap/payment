@@ -18,6 +18,8 @@ use AppZap\Payment\Session\SessionHandlerInterface;
 abstract class Payment
 {
 
+    const PROVIDER_NAME = '_OVERWRITE_THIS';
+
     /**
      * @var string
      */
@@ -37,6 +39,15 @@ abstract class Payment
      * @var SessionHandlerInterface
      */
     protected $sessionHandler;
+
+    /**
+     * @return string
+     */
+    public function getProviderName()
+    {
+        $calledClass = get_called_class();
+        return $calledClass::PROVIDER_NAME;
+    }
 
     /**
      * @param string $encryptionKey
