@@ -1,6 +1,7 @@
 <?php
 namespace AppZap\Payment\Provider;
 
+use AppZap\Payment\Model\CustomerData;
 use AppZap\Payment\Model\OrderInterface;
 use AppZap\Payment\Session\SessionHandlerInterface;
 
@@ -67,5 +68,10 @@ interface PaymentProviderInterface
      * @return int
      */
     public function evaluateReturnToken(OrderInterface $order, $returnToken);
+
+    /**
+     * @return CustomerData
+     */
+    public function getCustomerData();
 
 }

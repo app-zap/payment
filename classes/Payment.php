@@ -1,6 +1,7 @@
 <?php
 namespace AppZap\Payment;
 
+use AppZap\Payment\Model\CustomerData;
 use AppZap\Payment\Model\OrderInterface;
 use AppZap\Payment\Provider\PaymentProviderInterface;
 use AppZap\Payment\Session\SessionHandler;
@@ -152,6 +153,14 @@ abstract class Payment implements PaymentProviderInterface
             }
         }
         return PaymentProviderInterface::RETURN_TYPE_ERROR;
+    }
+
+    /**
+     * @return CustomerData
+     */
+    public function getCustomerData()
+    {
+        return new CustomerData();
     }
 
 }

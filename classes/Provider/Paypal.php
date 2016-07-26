@@ -1,6 +1,7 @@
 <?php
 namespace AppZap\Payment\Provider;
 
+use AppZap\Payment\Model\CustomerData;
 use AppZap\Payment\Payment;
 use PayPal\Api\Amount;
 use PayPal\Api\Item;
@@ -39,6 +40,11 @@ class Paypal extends Payment implements PaymentProviderInterface
             throw new \Exception('Auth Config for Provider ' . self::PROVIDER_NAME . ' is not set.', 1394795187);
         }
 
+        if (!empty($this->order->getPayerToken())) {
+            // The payment was previously authorized and can now be completed directly
+            return $this->getUrl($urlFormat, PaymentProviderInterface::RETURN_TYPE_PAID);
+        }
+
         $totalPrice = $this->order->getTotalPrice();
         if ($totalPrice == 0) {
             throw new \Exception('Total price is 0. Provider ' . self::PROVIDER_NAME . ' does not support free payments.', 1394795478);
@@ -48,7 +54,6 @@ class Paypal extends Payment implements PaymentProviderInterface
             throw new \Exception('No valid API mode given.', 1399294820);
         }
 
-        $apiContext = $this->createApiContext();
         $payer = new Payer();
         $payer->setPaymentMethod('paypal');
         $amount = new Amount();
@@ -71,7 +76,7 @@ class Paypal extends Payment implements PaymentProviderInterface
         $payment->setPayer($payer);
         $payment->setRedirectUrls($redirectUrls);
         $payment->setTransactions([$transaction]);
-        $payment->create($apiContext);
+        $payment->create($this->getApiContext());
         $this->getSessionHandler()->store('paymentId', $payment->getId());
         $paymentUrl = '';
         foreach ($payment->getLinks() as $link) {
@@ -91,15 +96,13 @@ class Paypal extends Payment implements PaymentProviderInterface
      */
     public function execute($payerId = null)
     {
-        $querystring = $_SERVER['QUERY_STRING'];
-        $params = array();
-        parse_str($querystring, $params);
-        if (isset($params['PayerID'])) {
-            $apiContext = $this->createApiContext();
-            $payment = \PayPal\Api\Payment::get($this->getSessionHandler()->get('paymentId'), $apiContext);
+        if ($payerId === null) {
+            $payerId = $_GET['PayerID'];
+        }
+        if (!empty($payerId)) {
             $execution = new PaymentExecution();
-            $execution->setPayerId($params['PayerID']);
-            $returnedState = $payment->execute($execution, $apiContext);
+            $execution->setPayerId($payerId);
+            $returnedState = $this->getPayment()->execute($execution, $this->getApiContext());
             if ($returnedState->getIntent() !== 'sale') {
                 throw new \Exception('Paypal Payment execution failed', 1399884990);
             }
@@ -129,28 +132,65 @@ class Paypal extends Payment implements PaymentProviderInterface
     }
 
     /**
-     * @return ApiContext
-     */
-    protected function createApiContext()
-    {
-
-        $apiContext = new ApiContext(new OAuthTokenCredential(
-            $this->paymentProviderAuthConfig[self::PROVIDER_NAME]['clientid'],
-            $this->paymentProviderAuthConfig[self::PROVIDER_NAME]['secret']
-        ));
-        $apiContext->setConfig(array(
-            'mode' => $this->paymentProviderAuthConfig[self::PROVIDER_NAME]['mode'],
-            'http.ConnectionTimeOut' => 30,
-            'log.LogEnabled' => false,
-        ));
-        return $apiContext;
-    }
-
-    /**
      * @return bool
      */
     public function isExternalProvider()
     {
         return true;
+    }
+
+    /**
+     * @return CustomerData
+     */
+    public function getCustomerData()
+    {
+        $payerInfo = $this->getPayment()->payer->getPayerInfo();
+        $customerData = new CustomerData();
+        $customerData->setAddressAdditionalInfo($payerInfo->getBillingAddress()->getLine2());
+        $customerData->setAddressCity($payerInfo->getBillingAddress()->getCity());
+        $customerData->setAddressPostalCode($payerInfo->getBillingAddress()->getPostalCode());
+        $customerData->setAddressStreet($payerInfo->getBillingAddress()->getLine1());
+        $customerData->setEmail($payerInfo->getEmail());
+        $customerData->setFirstName($payerInfo->getFirstName());
+        $customerData->setLastName($payerInfo->getLastName());
+        $customerData->setMiddleName($payerInfo->getMiddleName());
+        $customerData->setNameSuffix($payerInfo->getSuffix());
+        $customerData->setPayerToken($payerInfo->getPayerId());
+        $customerData->setPhone($payerInfo->getPhone());
+        $customerData->setPhoneType($payerInfo->getPhoneType());
+        $customerData->setSalutation($payerInfo->getSalutation());
+        return $customerData;
+    }
+
+    /**
+     * @return \PayPal\Api\Payment
+     */
+    protected function getPayment()
+    {
+        static $payment;
+        if (!$payment instanceof \PayPal\Api\Payment) {
+            $payment = \PayPal\Api\Payment::get($this->getSessionHandler()->get('paymentId'), $this->getApiContext());
+        }
+        return $payment;
+    }
+
+    /**
+     * @return ApiContext
+     */
+    protected function getApiContext()
+    {
+        static $apiContext;
+        if (!$apiContext instanceof ApiContext) {
+            $apiContext = new ApiContext(new OAuthTokenCredential(
+                $this->paymentProviderAuthConfig[self::PROVIDER_NAME]['clientid'],
+                $this->paymentProviderAuthConfig[self::PROVIDER_NAME]['secret']
+            ));
+            $apiContext->setConfig(array(
+                'mode' => $this->paymentProviderAuthConfig[self::PROVIDER_NAME]['mode'],
+                'http.ConnectionTimeOut' => 30,
+                'log.LogEnabled' => false,
+            ));
+        }
+        return $apiContext;
     }
 }

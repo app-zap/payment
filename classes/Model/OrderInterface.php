@@ -22,6 +22,11 @@ interface OrderInterface
     /**
      * @return string
      */
+    public function getPayerToken();
+
+    /**
+     * @return string
+     */
     public function getReason();
 
     /**
