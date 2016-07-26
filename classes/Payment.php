@@ -15,7 +15,7 @@ use AppZap\Payment\Session\SessionHandlerInterface;
  *
  * @package AppZap\Payment
  */
-abstract class Payment
+abstract class Payment implements PaymentProviderInterface
 {
 
     const PROVIDER_NAME = '_OVERWRITE_THIS';
@@ -94,44 +94,32 @@ abstract class Payment
 
     /**
      * @param string $urlFormat
+     * @param int $urlType
      * @return string
+     * @throws \Exception
      */
-    protected function getAbortUrl($urlFormat)
+    protected function getUrl($urlFormat, $urlType)
     {
+        if (!in_array($urlType, [
+            PaymentProviderInterface::RETURN_TYPE_ABORT,
+            PaymentProviderInterface::RETURN_TYPE_AUTHORIZED,
+            PaymentProviderInterface::RETURN_TYPE_OFFLINE_PAYMENT,
+            PaymentProviderInterface::RETURN_TYPE_PAID,
+        ])
+        ) {
+            throw new \Exception('Invalid urlType', 1469517895);
+        }
         return sprintf(
             $urlFormat,
-            TokenUtility::getUrlToken($this->order->getIdentifier(), $this->order->getRecordToken(), $this->getReturnKey(PaymentProviderInterface::RETURN_TYPE_ABORT))
+            TokenUtility::getUrlToken($this->order->getIdentifier(), $this->order->getRecordToken(), $this->getReturnKey($urlType))
         );
     }
 
     /**
-     * @param string $urlFormat
-     * @return string
-     */
-    protected function getOfflinePaymentUrl($urlFormat)
-    {
-        return sprintf(
-            $urlFormat,
-            TokenUtility::getUrlToken($this->order->getIdentifier(), $this->order->getRecordToken(), $this->getReturnKey(PaymentProviderInterface::RETURN_TYPE_OFFLINE_PAYMENT))
-        );
-    }
-
-    /**
-     * @param string $urlFormat
-     * @return string
-     */
-    protected function getSuccessUrl($urlFormat)
-    {
-        return sprintf(
-            $urlFormat,
-            TokenUtility::getUrlToken($this->order->getIdentifier(), $this->order->getRecordToken(), $this->getReturnKey(PaymentProviderInterface::RETURN_TYPE_PAID))
-        );
-    }
-
-    /**
+     * @param string $paymentToken
      * @return void
      */
-    public function execute()
+    public function execute($paymentToken = null)
     {
     }
 
@@ -152,7 +140,12 @@ abstract class Payment
      */
     public function evaluateReturnToken(OrderInterface $order, $returnToken)
     {
-        $returnTypes = [PaymentProviderInterface::RETURN_TYPE_PAID, PaymentProviderInterface::RETURN_TYPE_ABORT, PaymentProviderInterface::RETURN_TYPE_OFFLINE_PAYMENT];
+        $returnTypes = [
+            PaymentProviderInterface::RETURN_TYPE_ABORT,
+            PaymentProviderInterface::RETURN_TYPE_AUTHORIZED,
+            PaymentProviderInterface::RETURN_TYPE_OFFLINE_PAYMENT,
+            PaymentProviderInterface::RETURN_TYPE_PAID,
+        ];
         foreach ($returnTypes as $returnType) {
             if (TokenUtility::evaluateUrlToken($order->getIdentifier(), $order->getRecordToken(), $returnToken, $this->getReturnKey($returnType))) {
                 return $returnType;
@@ -162,5 +155,3 @@ abstract class Payment
     }
 
 }
-
-?>

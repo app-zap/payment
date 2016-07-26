@@ -59,8 +59,13 @@ class Paypal extends Payment implements PaymentProviderInterface
         $transaction->setItemList($this->getItemList());
         $transaction->setAmount($amount);
         $redirectUrls = new RedirectUrls();
-        $redirectUrls->setReturnUrl($this->getSuccessUrl($urlFormat));
-        $redirectUrls->setCancelUrl($this->getAbortUrl($urlFormat));
+        if ((bool)$this->paymentProviderAuthConfig[self::PROVIDER_NAME]['commitPayment']) {
+            $successType = PaymentProviderInterface::RETURN_TYPE_PAID;
+        } else {
+            $successType = PaymentProviderInterface::RETURN_TYPE_AUTHORIZED;
+        }
+        $redirectUrls->setReturnUrl($this->getUrl($urlFormat, $successType));
+        $redirectUrls->setCancelUrl($this->getUrl($urlFormat, PaymentProviderInterface::RETURN_TYPE_ABORT));
         $payment = new \PayPal\Api\Payment();
         $payment->setIntent('sale');
         $payment->setPayer($payer);
@@ -81,10 +86,10 @@ class Paypal extends Payment implements PaymentProviderInterface
     }
 
     /**
+     * @param string $payerId
      * @throws \Exception
-     * @return void
      */
-    public function execute()
+    public function execute($payerId = null)
     {
         $querystring = $_SERVER['QUERY_STRING'];
         $params = array();

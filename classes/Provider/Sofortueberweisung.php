@@ -35,8 +35,8 @@ class Sofortueberweisung extends Payment implements PaymentProviderInterface
         $sofort->setCurrencyCode('EUR');
         $sofort->setSenderCountryCode('DE');
         $sofort->setReason($this->order->getReason());
-        $sofort->setSuccessUrl($this->getSuccessUrl($urlFormat));
-        $sofort->setAbortUrl($this->getAbortUrl($urlFormat));
+        $sofort->setSuccessUrl($this->getUrl($urlFormat, PaymentProviderInterface::RETURN_TYPE_PAID));
+        $sofort->setAbortUrl($this->getUrl($urlFormat, PaymentProviderInterface::RETURN_TYPE_ABORT));
         $sofort->sendRequest();
         $url = $sofort->getPaymentUrl();
         return $url;

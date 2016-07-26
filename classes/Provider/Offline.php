@@ -17,7 +17,7 @@ class Offline extends Payment implements PaymentProviderInterface
      */
     public function getPaymentUrl($urlFormat)
     {
-        return $this->getOfflinePaymentUrl($urlFormat);
+        return $this->getUrl($urlFormat, PaymentProviderInterface::RETURN_TYPE_OFFLINE_PAYMENT);
     }
 
     /**

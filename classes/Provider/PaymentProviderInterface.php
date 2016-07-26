@@ -8,14 +8,15 @@ interface PaymentProviderInterface
 {
 
     const RETURN_TYPE_ABORT = 0;
-    const RETURN_TYPE_PAID = 1;
-    const RETURN_TYPE_OFFLINE_PAYMENT = 2;
-    const RETURN_TYPE_ERROR = 3;
+    const RETURN_TYPE_AUTHORIZED = 10;
+    const RETURN_TYPE_PAID = 20;
+    const RETURN_TYPE_OFFLINE_PAYMENT = 30;
+    const RETURN_TYPE_ERROR = 40;
 
     /**
-     * @return void
+     * @param string $paymentToken
      */
-    public function execute();
+    public function execute($paymentToken = null);
 
     /**
      * @return string
