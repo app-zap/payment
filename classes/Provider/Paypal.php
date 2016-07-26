@@ -74,7 +74,10 @@ class Paypal extends Payment implements PaymentProviderInterface
                 $paymentUrl = $link->getHref();
             }
         }
-        return $paymentUrl . '&useraction=commit';
+        if ((bool)$this->paymentProviderAuthConfig[self::PROVIDER_NAME]['commitPayment']) {
+            $paymentUrl .= '&useraction=commit';
+        }
+        return $paymentUrl;
     }
 
     /**
