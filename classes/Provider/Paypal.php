@@ -3,6 +3,7 @@ namespace AppZap\Payment\Provider;
 
 use AppZap\Payment\Model\CustomerData;
 use AppZap\Payment\Payment;
+use PayPal\Api\Address;
 use PayPal\Api\Amount;
 use PayPal\Api\Item;
 use PayPal\Api\ItemList;
@@ -146,10 +147,16 @@ class Paypal extends Payment implements PaymentProviderInterface
     {
         $payerInfo = $this->getPayment()->payer->getPayerInfo();
         $customerData = new CustomerData();
-        $customerData->setAddressAdditionalInfo($payerInfo->getBillingAddress()->getLine2());
-        $customerData->setAddressCity($payerInfo->getBillingAddress()->getCity());
-        $customerData->setAddressPostalCode($payerInfo->getBillingAddress()->getPostalCode());
-        $customerData->setAddressStreet($payerInfo->getBillingAddress()->getLine1());
+        $address = $payerInfo->getBillingAddress();
+        if (!$address instanceof Address) {
+            $address = $payerInfo->getShippingAddress();
+        }
+        if ($address instanceof Address) {
+            $customerData->setAddressAdditionalInfo($address->getLine2());
+            $customerData->setAddressCity($address->getCity());
+            $customerData->setAddressPostalCode($address->getPostalCode());
+            $customerData->setAddressStreet($address->getLine1());
+        }
         $customerData->setEmail($payerInfo->getEmail());
         $customerData->setFirstName($payerInfo->getFirstName());
         $customerData->setLastName($payerInfo->getLastName());
