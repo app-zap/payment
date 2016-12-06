@@ -13,6 +13,7 @@
     }
   },
   "require": {
+    "amzn/login-and-pay-with-amazon-sdk-php": "2.1.*",
     "paypal/rest-api-sdk-php": "v1.7.4",
     "smichaelsen/sofortlib-php-payment": "2.0.*"
   }
