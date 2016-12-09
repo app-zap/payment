@@ -32,6 +32,11 @@ abstract class Payment implements PaymentProviderInterface
     protected $order;
 
     /**
+     * @var bool
+     */
+    protected $paymentJavascriptBased = false;
+
+    /**
      * @var array
      */
     protected $paymentProviderAuthConfig;
@@ -161,6 +166,14 @@ abstract class Payment implements PaymentProviderInterface
     public function getCustomerData()
     {
         return new CustomerData();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPaymentJavascriptBased()
+    {
+        return $this->paymentJavascriptBased;
     }
 
 }

@@ -10,6 +10,11 @@ class AmazonPay extends Payment implements PaymentProviderInterface
     const PROVIDER_NAME = 'AMAZON_PAY';
 
     /**
+     * @var bool
+     */
+    protected $paymentJavascriptBased = true;
+
+    /**
      * When you have configured the payment properly this will give you a URL that you can redirect your visitor to,
      * so that he can pay the desired amount.
      *
@@ -40,8 +45,13 @@ class AmazonPay extends Payment implements PaymentProviderInterface
             throw new \Exception('Total price is 0. Provider ' . self::PROVIDER_NAME . ' does not support free payments.', 1394795478);
         }
 
-        $config = $this->paymentProviderAuthConfig[self::PROVIDER_NAME];
-        $config['sandbox'] = true;
+        $config = [
+            'merchant_id' => $this->paymentProviderAuthConfig[self::PROVIDER_NAME]['merchant_id'],
+            'access_key' => $this->paymentProviderAuthConfig[self::PROVIDER_NAME]['access_key'],
+            'secret_key' => $this->paymentProviderAuthConfig[self::PROVIDER_NAME]['secret_key'],
+            'region' => $this->paymentProviderAuthConfig[self::PROVIDER_NAME]['region'],
+        ];
+        $config['sandbox'] = ($this->paymentProviderAuthConfig[self::PROVIDER_NAME]['mode'] === 'sandbox');
 
         $client = new Client($config);
         $response = $client->charge([]);

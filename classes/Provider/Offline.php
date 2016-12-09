@@ -27,5 +27,4 @@ class Offline extends Payment implements PaymentProviderInterface
     {
         return false;
     }
-
 }
