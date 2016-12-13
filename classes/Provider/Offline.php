@@ -2,7 +2,7 @@
 namespace AppZap\Payment\Provider;
 
 use AppZap\Payment\Model\OrderInterface;
-use AppZap\Payment\PaymentService;
+use AppZap\Payment\AbstractPaymentService;
 
 class Offline extends AbstractPaymentProvider implements PaymentProviderInterface
 {
@@ -19,6 +19,6 @@ class Offline extends AbstractPaymentProvider implements PaymentProviderInterfac
      */
     public function getPaymentUrl(OrderInterface $order, $urlFormat)
     {
-        return $this->paymentService->getUrl($order, $urlFormat, PaymentService::RETURN_TYPE_OFFLINE_PAYMENT);
+        return $this->paymentService->getUrl($order, $urlFormat, AbstractPaymentService::RETURN_TYPE_OFFLINE_PAYMENT);
     }
 }

@@ -1,7 +1,7 @@
 <?php
 namespace AppZap\Payment\Provider;
 
-use AppZap\Payment\PaymentService;
+use AppZap\Payment\AbstractPaymentService;
 
 abstract class AbstractPaymentProvider implements PaymentProviderInterface
 {
@@ -14,7 +14,7 @@ abstract class AbstractPaymentProvider implements PaymentProviderInterface
     protected $authenticationConfig;
 
     /**
-     * @var PaymentService
+     * @var AbstractPaymentService
      */
     protected $paymentService;
 
@@ -27,10 +27,10 @@ abstract class AbstractPaymentProvider implements PaymentProviderInterface
     }
 
     /**
-     * @param PaymentService $paymentService
+     * @param AbstractPaymentService $paymentService
      * @return void
      */
-    public function setPaymentService(PaymentService $paymentService)
+    public function setPaymentService(AbstractPaymentService $paymentService)
     {
         $this->paymentService = $paymentService;
     }

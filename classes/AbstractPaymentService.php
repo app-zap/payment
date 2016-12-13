@@ -2,6 +2,7 @@
 namespace AppZap\Payment;
 
 
+use AppZap\Payment\Model\CustomerData;
 use AppZap\Payment\Model\OrderInterface;
 use AppZap\Payment\Provider\ExternalPaymentProviderInterface;
 use AppZap\Payment\Provider\PaymentProviderInterface;
@@ -9,7 +10,7 @@ use AppZap\Payment\Session\SessionHandler;
 use AppZap\Payment\Session\SessionHandlerInterface;
 use AppZap\Tripshop\Service\PaymentProviderNotAllowedException;
 
-abstract class PaymentService
+abstract class AbstractPaymentService
 {
 
     const RETURN_TYPE_ABORT = 0;
@@ -102,6 +103,19 @@ abstract class PaymentService
 
     /**
      * @param OrderInterface $order
+     * @return CustomerData|null
+     */
+    public function getCustomerData(OrderInterface $order)
+    {
+        $paymentProvider = $this->getPaymentProvider($order);
+        if ($paymentProvider instanceof ExternalPaymentProviderInterface) {
+            return $paymentProvider->getCustomerData();
+        }
+        return null;
+    }
+
+    /**
+     * @param OrderInterface $order
      * @return PaymentProviderInterface
      * @throws PaymentProviderNotAllowedException
      */
@@ -125,7 +139,7 @@ abstract class PaymentService
 
     /**
      * @param string $paymentProviderName
-     * @param OrderInterface $order
+     * @param OrderInterface $order Unused in this implementation, but parent classes may need it.
      * @return bool
      */
     protected function paymentProviderIsAvailable($paymentProviderName, OrderInterface $order)

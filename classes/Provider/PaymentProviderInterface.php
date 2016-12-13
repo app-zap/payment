@@ -2,7 +2,7 @@
 namespace AppZap\Payment\Provider;
 
 use AppZap\Payment\Model\OrderInterface;
-use AppZap\Payment\PaymentService;
+use AppZap\Payment\AbstractPaymentService;
 
 interface PaymentProviderInterface
 {
@@ -40,8 +40,8 @@ interface PaymentProviderInterface
     public function getPaymentUrl(OrderInterface $order, $urlFormat);
 
     /**
-     * @param PaymentService $paymentService
+     * @param AbstractPaymentService $paymentService
      * @return void
      */
-    public function setPaymentService(PaymentService $paymentService);
+    public function setPaymentService(AbstractPaymentService $paymentService);
 }

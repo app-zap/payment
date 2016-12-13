@@ -3,7 +3,7 @@ namespace AppZap\Payment\Provider;
 
 use AppZap\Payment\Model\CustomerData;
 use AppZap\Payment\Model\OrderInterface;
-use AppZap\Payment\PaymentService;
+use AppZap\Payment\AbstractPaymentService;
 use PayPal\Api\Address;
 use PayPal\Api\Amount;
 use PayPal\Api\Item;
@@ -45,7 +45,7 @@ class Paypal extends AbstractPaymentProvider implements PaymentProviderInterface
 
         if (!empty($order->getPayerToken())) {
             // The payment was previously authorized and can now be completed directly
-            return $this->paymentService->getUrl($order, $urlFormat, PaymentService::RETURN_TYPE_PAID);
+            return $this->paymentService->getUrl($order, $urlFormat, AbstractPaymentService::RETURN_TYPE_PAID);
         }
 
         $totalPrice = $order->getTotalPrice();
@@ -68,12 +68,12 @@ class Paypal extends AbstractPaymentProvider implements PaymentProviderInterface
         $transaction->setAmount($amount);
         $redirectUrls = new RedirectUrls();
         if ((bool)$this->authenticationConfig['commitPayment']) {
-            $successType = PaymentService::RETURN_TYPE_PAID;
+            $successType = AbstractPaymentService::RETURN_TYPE_PAID;
         } else {
-            $successType = PaymentService::RETURN_TYPE_AUTHORIZED;
+            $successType = AbstractPaymentService::RETURN_TYPE_AUTHORIZED;
         }
         $redirectUrls->setReturnUrl($this->paymentService->getUrl($order, $urlFormat, $successType));
-        $redirectUrls->setCancelUrl($this->paymentService->getUrl($order, $urlFormat, PaymentService::RETURN_TYPE_ABORT));
+        $redirectUrls->setCancelUrl($this->paymentService->getUrl($order, $urlFormat, AbstractPaymentService::RETURN_TYPE_ABORT));
         $payment = new \PayPal\Api\Payment();
         $payment->setIntent('sale');
         $payment->setPayer($payer);

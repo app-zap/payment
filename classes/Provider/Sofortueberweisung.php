@@ -3,7 +3,7 @@ namespace AppZap\Payment\Provider;
 
 use AppZap\Payment\Model\CustomerData;
 use AppZap\Payment\Model\OrderInterface;
-use AppZap\Payment\PaymentService;
+use AppZap\Payment\AbstractPaymentService;
 
 class Sofortueberweisung extends AbstractPaymentProvider implements PaymentProviderInterface, ExternalPaymentProviderInterface
 {
@@ -38,8 +38,8 @@ class Sofortueberweisung extends AbstractPaymentProvider implements PaymentProvi
         $sofort->setCurrencyCode('EUR');
         $sofort->setSenderCountryCode('DE');
         $sofort->setReason($order->getReason());
-        $sofort->setSuccessUrl($this->paymentService->getUrl($order, $urlFormat, PaymentService::RETURN_TYPE_PAID));
-        $sofort->setAbortUrl($this->paymentService->getUrl($order, $urlFormat, PaymentService::RETURN_TYPE_ABORT));
+        $sofort->setSuccessUrl($this->paymentService->getUrl($order, $urlFormat, AbstractPaymentService::RETURN_TYPE_PAID));
+        $sofort->setAbortUrl($this->paymentService->getUrl($order, $urlFormat, AbstractPaymentService::RETURN_TYPE_ABORT));
         $sofort->sendRequest();
         $url = $sofort->getPaymentUrl();
         return $url;
