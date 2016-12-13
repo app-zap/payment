@@ -24,30 +24,31 @@ abstract class PaymentService
     protected $encryptionKey;
 
     /**
-     * @var OrderInterface
-     */
-    protected $order;
-
-    /**
-     * Left blank to be overwritten
-     */
-    public function __construct()
-    {
-    }
-
-    /**
      * @param string $encryptionKey
      */
-    public function setEncryptionKey($encryptionKey)
+    public function __construct($encryptionKey)
     {
         $this->encryptionKey = $encryptionKey;
     }
 
     /**
      * @param OrderInterface $order
+     * @return array|PaymentProviderInterface[]
      */
-    public function setOrder(OrderInterface $order)
+    public function getAvailablePaymentProviders(OrderInterface $order)
     {
+        $availablePaymentProviderNames = array_filter(
+            array_keys(PaymentProviderRegistry::getSupportedPaymentProviders()),
+            function($paymentProviderToCheck) use ($order) {
+                return $this->paymentProviderIsAvailable($paymentProviderToCheck, $order);
+            }
+        );
+        $paymentFactory = new PaymentFactory();
+        $availablePaymentProviders = [];
+        foreach ($availablePaymentProviderNames as $availablePaymentProviderName) {
+            $availablePaymentProviders[] = $paymentFactory->getPaymentProviderObject($availablePaymentProviderName);
+        }
+        return $availablePaymentProviders;
     }
 
     /**
@@ -82,10 +83,11 @@ abstract class PaymentService
     }
 
     /**
-     * @param string $payerToken
+     * @param OrderInterface $order
      */
-    public function execute($payerToken)
+    public function execute(OrderInterface $order)
     {
+        $this->getPaymentProvider($order)->execute($order->getPayerToken());
     }
 
     /**
@@ -105,8 +107,9 @@ abstract class PaymentService
      */
     protected function getPaymentProvider(OrderInterface $order)
     {
-        if (!$this->paymentProviderIsAvailable($order->getPaymentProviderName())) {
-            throw new PaymentProviderNotAllowedException('Payment provider ' . $order->getPaymentProviderName() . ' is not available for order #' . $order->getIdentifier(), 1456927387);
+        if (!$this->paymentProviderIsAvailable($order->getPaymentProviderName(), $order)) {
+            throw new PaymentProviderNotAllowedException(
+                'Payment provider ' . $order->getPaymentProviderName() . ' is not available for order #' . $order->getIdentifier(), 1456927387);
         }
         static $paymentProviderObjects = [];
         if (!isset($paymentProviderObjects[$order->getPaymentProviderName()])) {
@@ -122,9 +125,11 @@ abstract class PaymentService
 
     /**
      * @param string $paymentProviderName
+     * @param OrderInterface $order
      * @return bool
      */
-    protected function paymentProviderIsAvailable($paymentProviderName) {
+    protected function paymentProviderIsAvailable($paymentProviderName, OrderInterface $order)
+    {
         $supportedPaymentProviders = array_keys(PaymentProviderRegistry::getSupportedPaymentProviders());
         return in_array($paymentProviderName, $supportedPaymentProviders);
     }
@@ -170,6 +175,8 @@ abstract class PaymentService
     }
 
     /**
+     * This has to be implemented by the concrete PaymentService to gather configuration for the given payment provider
+     *
      * @param string $paymentProviderName
      * @return array
      */
