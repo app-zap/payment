@@ -25,5 +25,4 @@ class PaymentProviderRegistry
     {
         return self::$supportedPaymentProviders;
     }
-
 }

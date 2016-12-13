@@ -1,82 +1,47 @@
 <?php
 namespace AppZap\Payment\Provider;
 
-use AppZap\Payment\Model\CustomerData;
 use AppZap\Payment\Model\OrderInterface;
-use AppZap\Payment\Session\SessionHandlerInterface;
+use AppZap\Payment\PaymentService;
 
 interface PaymentProviderInterface
 {
 
-    const RETURN_TYPE_ABORT = 0;
-    const RETURN_TYPE_AUTHORIZED = 10;
-    const RETURN_TYPE_PAID = 20;
-    const RETURN_TYPE_OFFLINE_PAYMENT = 30;
-    const RETURN_TYPE_ERROR = 40;
-
     /**
-     * @param string $paymentToken
-     */
-    public function execute($paymentToken = null);
-
-    /**
+     * Returns the identifier of the payment provider, e.g. MY_PAYMENY_SERVICE
+     *
      * @return string
      */
     public function getProviderName();
 
     /**
+     * Indicates wether the payment provider needs javascript access on the checkout page
+     *
      * @return bool
      */
     public function isPaymentJavascriptBased();
 
     /**
-     * When you have configured the payment properly this will give you a URL that you can redirect your visitor to,
-     * so that he can pay the desired amount.
+     * Executes a payment that was previously authorized
      *
+     * @param string $paymentToken
+     * @return void
+     */
+    public function execute($paymentToken = null);
+
+    /**
+     * Returns the URL the visitor is sent to to either authorize the payment or directly execute it, depending on the
+     * configuration.
+     *
+     * @param OrderInterface $order
      * @param $urlFormat
      * @return string
      */
-    public function getPaymentUrl($urlFormat);
+    public function getPaymentUrl(OrderInterface $order, $urlFormat);
 
     /**
-     * @return bool
-     */
-    public function isExternalProvider();
-
-    /**
-     * @param string $key
+     * @param PaymentService $paymentService
      * @return void
      */
-    public function setEncryptionKey($key);
-
-    /**
-     * @param OrderInterface $order
-     * @return void
-     */
-    public function setOrder(OrderInterface $order);
-
-    /**
-     * @param array $paymentProviderAuthConfig
-     * @return void
-     */
-    public function setPaymentProviderAuthConfig(array $paymentProviderAuthConfig);
-
-    /**
-     * @param SessionHandlerInterface $sessionHandler
-     * @return void
-     */
-    public function setSessionHandler(SessionHandlerInterface $sessionHandler);
-
-    /**
-     * @param OrderInterface $order
-     * @param string $returnToken
-     * @return int
-     */
-    public function evaluateReturnToken(OrderInterface $order, $returnToken);
-
-    /**
-     * @return CustomerData
-     */
-    public function getCustomerData();
-
+    public function setPaymentService(PaymentService $paymentService);
 }

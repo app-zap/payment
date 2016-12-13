@@ -54,7 +54,7 @@ class TokenUtility
             throw new \Exception('Tried to generate a URL without record token. This might be a security risk.', 1394637804);
         }
         if (!$typeKey) {
-            throw new \Exception('Tried to generate a URL token without a typeKey. Maybe orderSuccessKey/orderErrorKey are not set in the configuration?', 1394637867);
+            throw new \Exception('Tried to generate a URL token without a typeKey.', 1394637867);
         }
         return str_pad($identifier, self::$paddedOrderIdLength, '0', STR_PAD_LEFT) . hash('sha256', $recordToken . $typeKey);
     }
@@ -67,7 +67,7 @@ class TokenUtility
      */
     public static function getOrderIdFromUrlToken($urlToken)
     {
-        return (int)substr($urlToken, 0, self::$paddedOrderIdLength);
+        return (int) substr($urlToken, 0, self::$paddedOrderIdLength);
     }
 
     /**
@@ -86,5 +86,4 @@ class TokenUtility
         }
         return $token === self::getUrlToken($identifier, $recordToken, $typeKey);
     }
-
 }

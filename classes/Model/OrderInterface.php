@@ -5,6 +5,8 @@ interface OrderInterface
 {
 
     /**
+     * Returns the currency as three digit code, as defined by ISO 4217
+     *
      * @return string
      */
     public function getCurrencyCode();
@@ -27,6 +29,11 @@ interface OrderInterface
     /**
      * @return string
      */
+    public function getPaymentProviderName();
+
+    /**
+     * @return string
+     */
     public function getReason();
 
     /**
@@ -43,5 +50,4 @@ interface OrderInterface
      * @return float
      */
     public function getTotalPrice();
-
 }

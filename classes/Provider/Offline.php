@@ -1,9 +1,10 @@
 <?php
 namespace AppZap\Payment\Provider;
 
-use AppZap\Payment\Payment;
+use AppZap\Payment\Model\OrderInterface;
+use AppZap\Payment\PaymentService;
 
-class Offline extends Payment implements PaymentProviderInterface
+class Offline extends AbstractPaymentProvider implements PaymentProviderInterface
 {
 
     const PROVIDER_NAME = 'OFFLINE';
@@ -12,19 +13,12 @@ class Offline extends Payment implements PaymentProviderInterface
      * When you have configured the payment properly this will give you a URL that you can redirect your visitor to,
      * so that he can pay the desired amount.
      *
+     * @param OrderInterface $order
      * @param string $urlFormat
      * @return string
      */
-    public function getPaymentUrl($urlFormat)
+    public function getPaymentUrl(OrderInterface $order, $urlFormat)
     {
-        return $this->getUrl($urlFormat, PaymentProviderInterface::RETURN_TYPE_OFFLINE_PAYMENT);
-    }
-
-    /**
-     * @return bool
-     */
-    public function isExternalProvider()
-    {
-        return false;
+        return $this->paymentService->getUrl($order, $urlFormat, PaymentService::RETURN_TYPE_OFFLINE_PAYMENT);
     }
 }

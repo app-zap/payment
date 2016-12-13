@@ -19,5 +19,4 @@ class PaymentFactory
             throw new \InvalidArgumentException('Payment provider ' . htmlentities($paymentProviderName) . ' is not supported.', 1447533889);
         }
     }
-
 }
