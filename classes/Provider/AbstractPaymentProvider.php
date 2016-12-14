@@ -36,22 +36,12 @@ abstract class AbstractPaymentProvider implements PaymentProviderInterface
     }
 
     /**
-     * Indicates wether the payment provider needs javascript access on the checkout page
-     *
-     * @return bool
-     */
-    public function isPaymentJavascriptBased()
-    {
-        return false;
-    }
-
-    /**
      * Executes a payment that was previously authorized
      *
      * @param string $paymentToken
      * @return void
      */
-    public function execute($paymentToken = null)
+    public function execute($paymentToken)
     {
     }
 

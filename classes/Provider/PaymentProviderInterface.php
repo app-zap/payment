@@ -15,19 +15,12 @@ interface PaymentProviderInterface
     public function getProviderName();
 
     /**
-     * Indicates wether the payment provider needs javascript access on the checkout page
-     *
-     * @return bool
-     */
-    public function isPaymentJavascriptBased();
-
-    /**
      * Executes a payment that was previously authorized
      *
      * @param string $paymentToken
      * @return void
      */
-    public function execute($paymentToken = null);
+    public function execute($paymentToken);
 
     /**
      * Returns the URL the visitor is sent to to either authorize the payment or directly execute it, depending on the

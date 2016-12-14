@@ -97,11 +97,8 @@ class Paypal extends AbstractPaymentProvider implements PaymentProviderInterface
      * @param string $payerId
      * @throws \Exception
      */
-    public function execute($payerId = null)
+    public function execute($payerId)
     {
-        if ($payerId === null) {
-            $payerId = $_GET['PayerID'];
-        }
         if (!empty($payerId)) {
             $execution = new PaymentExecution();
             $execution->setPayerId($payerId);

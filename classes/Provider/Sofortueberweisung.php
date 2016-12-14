@@ -29,7 +29,7 @@ class Sofortueberweisung extends AbstractPaymentProvider implements PaymentProvi
         }
 
         $totalPrice = $order->getTotalPrice();
-        if ($totalPrice === (float)0) {
+        if ($totalPrice === (float) 0) {
             throw new \Exception('Total price is 0. Provider ' . self::PROVIDER_NAME . ' does not support free payments.', 1394786580);
         }
 
