@@ -44,10 +44,9 @@ abstract class AbstractPaymentService
                 return $this->paymentProviderIsAvailable($paymentProviderToCheck, $order);
             }
         );
-        $paymentFactory = new PaymentFactory();
         $availablePaymentProviders = [];
         foreach ($availablePaymentProviderNames as $availablePaymentProviderName) {
-            $availablePaymentProviders[] = $paymentFactory->getPaymentProviderObject($availablePaymentProviderName);
+            $availablePaymentProviders[] = $this->instanciatePaymentProviderByName($availablePaymentProviderName);
         }
         return $availablePaymentProviders;
     }
@@ -125,16 +124,25 @@ abstract class AbstractPaymentService
             throw new PaymentProviderNotAllowedException(
                 'Payment provider ' . $order->getPaymentProviderName() . ' is not available for order #' . $order->getIdentifier(), 1456927387);
         }
+        return $this->instanciatePaymentProviderByName($order->getPaymentProviderName());
+    }
+
+    /**
+     * @param string $paymentProviderName
+     * @return PaymentProviderInterface
+     */
+    protected function instanciatePaymentProviderByName($paymentProviderName)
+    {
         static $paymentProviderObjects = [];
-        if (!isset($paymentProviderObjects[$order->getPaymentProviderName()])) {
-            $paymentProvider = (new PaymentFactory())->getPaymentProviderObject($order->getPaymentProviderName());
+        if (!isset($paymentProviderObjects[$paymentProviderName])) {
+            $paymentProvider = (new PaymentFactory())->getPaymentProviderObject($paymentProviderName);
             $paymentProvider->setPaymentService($this);
             if ($paymentProvider instanceof ExternalPaymentProviderInterface) {
-                $paymentProvider->setAuthenticationConfig($this->getAuthenticationConfig($order->getPaymentProviderName()));
+                $paymentProvider->setAuthenticationConfig($this->getAuthenticationConfig($paymentProviderName));
             }
-            $paymentProviderObjects[$order->getPaymentProviderName()] = $paymentProvider;
+            $paymentProviderObjects[$paymentProviderName] = $paymentProvider;
         }
-        return $paymentProviderObjects[$order->getPaymentProviderName()];
+        return $paymentProviderObjects[$paymentProviderName];
     }
 
     /**
