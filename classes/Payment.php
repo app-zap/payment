@@ -110,10 +110,16 @@ abstract class Payment implements PaymentProviderInterface
         ) {
             throw new \Exception('Invalid urlType', 1469517895);
         }
-        return sprintf(
-            $urlFormat,
-            TokenUtility::getUrlToken($this->order->getIdentifier(), $this->order->getRecordToken(), $this->getReturnKey($urlType))
+        $urlToken = TokenUtility::getUrlToken(
+            $this->order->getIdentifier(),
+            $this->order->getRecordToken(),
+            $this->getReturnKey($urlType)
         );
+        $url = sprintf($urlFormat, $urlToken);
+        if ($url === false) {
+            throw new \Exception('Was not able to insert the token into the url - invalid $urlFormat', 1502718167);
+        }
+        return $url;
     }
 
     /**
